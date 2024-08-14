@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reconocimiento de Voz</title>
+  </head>
+  <body>
+    <h1>Prueba de reconocimiento de voz</h1>
+    <button id="recordButton">Grabar</button>
+    <button id="stopButton" disabled>Detener</button>
+    <h2 id="phraseOutput"></h2>
+    <button id="listenButton" disabled>Escuchar</button>
+
+    <script>
+      // Configuración del reconocimiento de voz
+      const recognition = new webkitSpeechRecognition();
+      recognition.lang = "es-ES";
+      recognition.continuous = false;
+      recognition.interimResults = false;
+
+      // Elementos del DOM
+      const recordButton = document.getElementById("recordButton");
+      const stopButton = document.getElementById("stopButton");
+      const phraseOutput = document.getElementById("phraseOutput");
+      const listenButton = document.getElementById("listenButton");
+
+      // Función para iniciar la grabación
+      recordButton.addEventListener("click", () => {
+        recognition.start();
+        recordButton.disabled = true;
+        stopButton.disabled = false;
+      });
+
+      // Función para detener la grabación
+      stopButton.addEventListener("click", () => {
+        recognition.stop();
+        stopButton.disabled = true;
+      });
+
+      // Manejo del resultado del reconocimiento de voz
+      recognition.addEventListener("result", (event) => {
+        const transcript = event.results[0][0].transcript;
+        phraseOutput.textContent = transcript;
+        listenButton.disabled = false;
+      });
+
+      // Leer la frase capturada
+      listenButton.addEventListener("click", () => {
+        const utterance = new SpeechSynthesisUtterance(phraseOutput.textContent);
+        utterance.lang = "es-ES";
+        speechSynthesis.speak(utterance);
+      });
+
+      // Reactivar botón de grabación al terminar
+      recognition.addEventListener("end", () => {
+        recordButton.disabled = false;
+      });
+    </script>
+  </body>
+</html>
