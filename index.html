@@ -1,62 +1,74 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Reconocimiento de Voz</title>
-  </head>
-  <body>
-    <h1>Prueba de reconocimiento de voz</h1>
-    <button id="recordButton">Grabar</button>
-    <button id="stopButton" disabled>Detener</button>
-    <h2 id="phraseOutput"></h2>
-    <button id="listenButton" disabled>Escuchar</button>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reconocimiento de Voz Continuo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container my-5">
+        <div class="card shadow-lg">
+            <div class="card-header bg-primary text-white text-center">
+                <h1 class="h3">Prueba de Reconocimiento de Voz Continuo</h1>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <button id="recordButton" class="btn btn-success btn-lg">Grabar</button>
+                    <button id="stopButton" class="btn btn-danger btn-lg" disabled>Detener</button>
+                </div>
+                <h2 id="phraseOutput" class="text-center mb-4"></h2>
+                <div class="text-center">
+                    <button id="listenButton" class="btn btn-primary" disabled>Escuchar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
     <script>
-      // Configuración del reconocimiento de voz
-      const recognition = new webkitSpeechRecognition();
-      recognition.lang = "es-ES";
-      recognition.continuous = false;
-      recognition.interimResults = false;
+        // Configuración del reconocimiento de voz
+        const recognition = new webkitSpeechRecognition();
+        recognition.lang = "es-ES";
+        recognition.continuous = true;  // Configuración clave para la grabación continua
+        recognition.interimResults = true;
 
-      // Elementos del DOM
-      const recordButton = document.getElementById("recordButton");
-      const stopButton = document.getElementById("stopButton");
-      const phraseOutput = document.getElementById("phraseOutput");
-      const listenButton = document.getElementById("listenButton");
+        // Elementos del DOM
+        const recordButton = document.getElementById("recordButton");
+        const stopButton = document.getElementById("stopButton");
+        const phraseOutput = document.getElementById("phraseOutput");
+        const listenButton = document.getElementById("listenButton");
 
-      // Función para iniciar la grabación
-      recordButton.addEventListener("click", () => {
-        recognition.start();
-        recordButton.disabled = true;
-        stopButton.disabled = false;
-      });
+        // Función para iniciar la grabación
+        recordButton.addEventListener("click", () => {
+            recognition.start();
+            recordButton.disabled = true;
+            stopButton.disabled = false;
+        });
 
-      // Función para detener la grabación
-      stopButton.addEventListener("click", () => {
-        recognition.stop();
-        stopButton.disabled = true;
-      });
+        // Función para detener la grabación
+        stopButton.addEventListener("click", () => {
+            recognition.stop();
+            stopButton.disabled = true;
+            recordButton.disabled = false;
+        });
 
-      // Manejo del resultado del reconocimiento de voz
-      recognition.addEventListener("result", (event) => {
-        const transcript = event.results[0][0].transcript;
-        phraseOutput.textContent = transcript;
-        listenButton.disabled = false;
-      });
+        // Manejo del resultado del reconocimiento de voz
+        recognition.addEventListener("result", (event) => {
+            let transcript = "";
+            for (let i = 0; i < event.results.length; i++) {
+                transcript += event.results[i][0].transcript;
+            }
+            phraseOutput.textContent = transcript;
+            listenButton.disabled = false;
+        });
 
-      // Leer la frase capturada
-      listenButton.addEventListener("click", () => {
-        const utterance = new SpeechSynthesisUtterance(phraseOutput.textContent);
-        utterance.lang = "es-ES";
-        speechSynthesis.speak(utterance);
-      });
-
-      // Reactivar botón de grabación al terminar
-      recognition.addEventListener("end", () => {
-        recordButton.disabled = false;
-      });
+        // Leer la frase capturada
+        listenButton.addEventListener("click", () => {
+            const utterance = new SpeechSynthesisUtterance(phraseOutput.textContent);
+            utterance.lang = "es-ES";
+            speechSynthesis.speak(utterance);
+        });
     </script>
-  </body>
+</body>
 </html>
